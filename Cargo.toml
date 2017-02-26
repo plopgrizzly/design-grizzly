@@ -1,0 +1,7 @@
+[package]
+name = "design_grizzly"
+version = "0.1.0"
+authors = ["Jeron Aldaron Lau <jeron.lau@plopgrizzly.tech>"]
+
+[dependencies]
+aldaron = { path = "../aldaron" }
