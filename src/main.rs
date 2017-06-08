@@ -1,17 +1,13 @@
-/**
- * Design Plop - "main.rs"
- * Copyright 2017 (c) Jeron Lau
-**/
+// Design Plop - "main.rs"
+// Copyright 2017 (c) Jeron Lau
+
+use std::env;
 
 extern crate adi;
-
-use adi::adi_screen;
 use adi::screen::{ GuiButton, Input, Sprite, Window, Transform };
 
-struct SpriteContext {
-	sprite: Sprite,
-	vertices: [f32;24],
-}
+mod model;
+use self::model::Model;
 
 struct HandleContext {
 	sprite: Sprite,
@@ -26,19 +22,13 @@ struct CreatorContext {
 
 struct Context {
 	window: Window,
-	tris: Vec<SpriteContext>,
+	models: Vec<Model>,
 //	handles: HandleContext,
 //	creators: CreatorContext,
 	button: GuiButton,
 }
 
 const HS : f32 = 0.125;
-const V_TRIANGLE : [f32;24] = [
-	// Front Side
-	-0.5,  0.5, 0., 1.0,	1.0, 0.0, 0.0, 1.0,
-	 0.5,  0.5, 0., 1.0,	0.0, 1.0, 0.0, 1.0,
-	 0.0, -0.5, 0., 1.0,	0.0, 0.0, 1.0, 1.0,
-];
 
 fn redraw(context: &mut Context) {
 //	screen::render(&mut context.window, 60, (0.0, 0.0, 0.0));
@@ -67,13 +57,13 @@ fn input(context: &mut Context) {
 			let l = i / 3;
 			let k = i % 3;
 			let o = k * 8;
-//			context.tris[l].context(0).vertices[0 + o] =
+//			context.sprites[l].context(0).vertices[0 + o] =
 //				context.handles.context(i).pos.0;
-//			context.tris[l].context(0).vertices[1 + o] =
+//			context.sprites[l].context(0).vertices[1 + o] =
 //				context.handles.context(i).pos.1;
-//			let v = context.tris[l].context(0).vertices;
+//			let v = context.sprites[l].context(0).vertices;
 
-//			context.tris[l].vertices(&mut context.window, &v);
+//			context.sprites[l].vertices(&mut context.window, &v);
 
 			let cv = i % 3;
 
@@ -181,26 +171,23 @@ fn input(context: &mut Context) {
 	});
 }*/
 
-/*fn new_triangle(context: &mut Context, vertices: &[f32;24]) {
-	// Matrices
-	let mut triangle = Sprite::colored(&mut context.window, &V_TRIANGLE,
-		&context.pipelines[0], logo_input);
-	let im = screen::Matrix::identity();
-	triangle.copy(&mut context.window, &im, SpriteContext {
-		vertices: *vertices
-	});
-	context.tris.push(triangle);
-
-	new_handle(context, vertices, 0);
-	new_handle(context, vertices, 1);
-	new_handle(context, vertices, 2);
-
-	new_creator(context, vertices, 0, 1);
-	new_creator(context, vertices, 1, 2);
-	new_creator(context, vertices, 2, 0);
-}*/
-
 fn main() {
+	let filename : String = {
+		let args = env::args();
+
+		match args.len() {
+			0 => panic!("couldn't get arguments"),
+			1 => ".".to_string(),
+			2 => args.last().unwrap(),
+			_ => {
+				println!("Too many arguments (MAX=1)!");
+				return;
+			}
+		}
+	};
+
+	println!("File: {}", filename);
+
 	// Vertices
 	let v_handle = [
 		-1.0, -1.0, 0.0, 1.0,	1.0, 1.0, 1.0, 1.0,
@@ -231,7 +218,7 @@ fn main() {
 //	let pipelines = screen::pipeline(&mut window, &shaders);
 
 	let mut context = Context {
-		tris: Vec::new(),
+		models: Vec::new(),
 //		handles: Sprite::colored(&mut window, &v_handle,
 //			&pipelines[0], handle_input),
 //		creators: Sprite::colored(&mut window, &v_creator,
@@ -240,7 +227,9 @@ fn main() {
 		window: window,
 	};
 
-//	new_triangle(&mut context, &V_TRIANGLE);
+	context.models.push(Model::create(&mut context.window, filename));
+
+//	new_triangle(&mut context, );
 
 	loop {
 		let input = context.window.update();
@@ -252,6 +241,10 @@ fn main() {
 		}
 
 		context.button.update(&mut context.window, input);
+
+		for i in &mut context.models {
+			i.update(&mut context.window);
+		}
 
 //		input(&mut context);
 	}
