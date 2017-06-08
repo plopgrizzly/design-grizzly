@@ -1,31 +1,35 @@
-extern crate aldaron;
+/**
+ * Design Plop - "main.rs"
+ * Copyright 2017 (c) Jeron Lau
+**/
 
-use aldaron::screen;
-use aldaron::screen::{ Event, Sprite, Window, Matrix };
-use aldaron::screen::gui::{ Button };
-use aldaron::screen::Pipeline;
+extern crate adi;
+
+use adi::adi_screen;
+use adi::screen::{ GuiButton, Input, Sprite, Window, Transform };
 
 struct SpriteContext {
+	sprite: Sprite,
 	vertices: [f32;24],
 }
 
 struct HandleContext {
+	sprite: Sprite,
 	held: bool,
 	pos: (f32, f32),
 }
 
 struct CreatorContext {
+	sprite: Sprite,
 	pos: (f32, f32),
 }
 
 struct Context {
 	window: Window,
-	event: Event,
-	tris: Vec<Sprite<SpriteContext>>,
-	handles: Sprite<HandleContext>,
-	creators: Sprite<CreatorContext>,
-	button: Sprite<Button>,
-	pipelines: Vec<Pipeline>,
+	tris: Vec<SpriteContext>,
+//	handles: HandleContext,
+//	creators: CreatorContext,
+	button: GuiButton,
 }
 
 const HS : f32 = 0.125;
@@ -36,11 +40,11 @@ const V_TRIANGLE : [f32;24] = [
 	 0.0, -0.5, 0., 1.0,	0.0, 0.0, 1.0, 1.0,
 ];
 
-fn draw(context: &mut Context) {
-	screen::render(&mut context.window, 60, (0.0, 0.0, 0.0));
+fn redraw(context: &mut Context) {
+//	screen::render(&mut context.window, 60, (0.0, 0.0, 0.0));
 }
 
-fn update_creator(context: &mut Context, i: usize, j: usize, k: usize, v: &[f32]) {
+/*fn update_creator(context: &mut Context, i: usize, j: usize, k: usize, v: &[f32]) {
 	let o = i * 8;
 	let p = j * 8;
 	let x = (v[0 + o] + v[0 + p]) * 0.5;
@@ -51,36 +55,26 @@ fn update_creator(context: &mut Context, i: usize, j: usize, k: usize, v: &[f32]
 			context.window.scaley() * HS, 1.0);
 	context.creators.matrix(&mut context.window, k, &hm);
 	context.creators.context(k).pos = (x, y);
-}
+}*/
 
 fn input(context: &mut Context) {
-	match context.event {
-		Event::None => draw(context),
-		_ => {},
-	};
-	context.button.run(&mut context.window, context.event);
-	for i in 0..context.handles.count() {
-		if context.creators.event(&mut context.window, i, context.event) != -1 {
-/*			let V_TRIANGLE = [
-				// Front Side
-				-0.5,  0.5, 0., 1.0,	1.0, 0.0, 0.0, 1.0,
-				 0.5,  0.5, 0., 1.0,	0.0, 1.0, 0.0, 1.0,
-				 0.0, -0.5, 0., 1.0,	0.0, 0.0, 1.0, 1.0,
-			];*/
+	
+//	for i in 0..context.handles.count() {
+/*		if context.creators.event(&mut context.window, i, context.event) != -1 {
 			new_triangle(context, &V_TRIANGLE);
-		}
-		if context.handles.event(&mut context.window, i, context.event) != -1 {
+		}*/
+/*		if context.handles.event(&mut context.window, i, context.event) != -1 {
 			let l = i / 3;
 			let k = i % 3;
 			let o = k * 8;
-			context.tris[l].context(0).vertices[0 + o] =
-				context.handles.context(i).pos.0;
-			context.tris[l].context(0).vertices[1 + o] =
-				context.handles.context(i).pos.1;
-			let v = context.tris[l].context(0).vertices;
+//			context.tris[l].context(0).vertices[0 + o] =
+//				context.handles.context(i).pos.0;
+//			context.tris[l].context(0).vertices[1 + o] =
+//				context.handles.context(i).pos.1;
+//			let v = context.tris[l].context(0).vertices;
 
-			context.tris[l].vertices(&mut context.window, &v);
-//
+//			context.tris[l].vertices(&mut context.window, &v);
+
 			let cv = i % 3;
 
 			let (i, j, k) = match cv {
@@ -92,17 +86,11 @@ fn input(context: &mut Context) {
 
 			update_creator(context, i, j, i + (3 * l), &v);
 			update_creator(context, i, k, k + (3 * l), &v);
-		}
-	}
+		}*/
+//	}
 }
 
-fn logo_input(_: &mut Window, _: &mut Sprite<SpriteContext>, _: usize, _: Event)
-	 -> isize
-{
-	-1
-}
-
-fn handle_check(window: &mut Window, handle: &mut Sprite<HandleContext>,
+/*fn handle_check(window: &mut Window, handle: &mut HandleContext,
 	i: usize, pos: (f32, f32)) -> isize
 {
 	if handle.context(i).held {
@@ -114,9 +102,9 @@ fn handle_check(window: &mut Window, handle: &mut Sprite<HandleContext>,
 		return i as isize;
 	}
 	-1
-}
+}*/
 
-fn handle_input(window: &mut Window, handle: &mut Sprite<HandleContext>,
+/*fn handle_input(window: &mut Window, handle: &mut HandleContext,
 	i: usize, event: Event) -> isize
 {
 	match event {
@@ -150,9 +138,9 @@ fn handle_input(window: &mut Window, handle: &mut Sprite<HandleContext>,
 		_ => {},
 	};
 	-1
-}
+}*/
 
-fn creator_input(window: &mut Window, handle: &mut Sprite<CreatorContext>,
+/*fn creator_input(window: &mut Window, handle: &mut CreatorContext,
 	i: usize, event: Event) -> isize
 {
 	match event {
@@ -168,9 +156,9 @@ fn creator_input(window: &mut Window, handle: &mut Sprite<CreatorContext>,
 		_ => {},
 	}
 	-1
-}
+}*/
 
-fn new_handle(context: &mut Context, vertices: &[f32;24], i: usize) {
+/*fn new_handle(context: &mut Context, vertices: &[f32;24], i: usize) {
 	let o = i * 8;
 	let hm = Matrix::identity()
 		.translate(vertices[0 + o], vertices[1 + o], vertices[2 + o])
@@ -178,9 +166,9 @@ fn new_handle(context: &mut Context, vertices: &[f32;24], i: usize) {
 	context.handles.copy(&mut context.window, &hm, HandleContext {
 		held: false, pos: (vertices[0 + o], vertices[1 + o]),
 	});
-}
+}*/
 
-fn new_creator(context: &mut Context, vertices: &[f32;24], i: usize, j: usize) {
+/*fn new_creator(context: &mut Context, vertices: &[f32;24], i: usize, j: usize) {
 	let o = i * 8;
 	let p = j * 8;
 	let x = (vertices[0 + o] + vertices[0 + p]) * 0.5;
@@ -191,9 +179,9 @@ fn new_creator(context: &mut Context, vertices: &[f32;24], i: usize, j: usize) {
 	context.creators.copy(&mut context.window, &hm, CreatorContext {
 		pos: (x, y),
 	});
-}
+}*/
 
-fn new_triangle(context: &mut Context, vertices: &[f32;24]) {
+/*fn new_triangle(context: &mut Context, vertices: &[f32;24]) {
 	// Matrices
 	let mut triangle = Sprite::colored(&mut context.window, &V_TRIANGLE,
 		&context.pipelines[0], logo_input);
@@ -210,7 +198,7 @@ fn new_triangle(context: &mut Context, vertices: &[f32;24]) {
 	new_creator(context, vertices, 0, 1);
 	new_creator(context, vertices, 1, 2);
 	new_creator(context, vertices, 2, 0);
-}
+}*/
 
 fn main() {
 	// Vertices
@@ -233,31 +221,38 @@ fn main() {
 		-1.0, 1.0, 0.0, 1.0,	0.5, 0.5, 0.5, 1.0,
 	];
 	// Open window
-	let mut window = screen::init("Design Grizzly",
-		include_bytes!("res/logo.ppm"), false);
+	let mut window = Window::create("Design Grizzly",
+		include_bytes!("res/logo.ppm"), &[]);
 
-	let shaders = [
-		screen::shader_color(&mut window),
-		screen::shader_texture(&mut window)
-	];
-	let pipelines = screen::pipeline(&mut window, &shaders);
+//	let shaders = [
+//		screen::shader_color(&mut window),
+//		screen::shader_texture(&mut window)
+//	];
+//	let pipelines = screen::pipeline(&mut window, &shaders);
 
 	let mut context = Context {
 		tris: Vec::new(),
-		handles: Sprite::colored(&mut window, &v_handle,
-			&pipelines[0], handle_input),
-		creators: Sprite::colored(&mut window, &v_creator,
-			&pipelines[0], creator_input),
-		button: Button::add(&mut window, &pipelines[1], (-1.0, -1.0)),
+//		handles: Sprite::colored(&mut window, &v_handle,
+//			&pipelines[0], handle_input),
+//		creators: Sprite::colored(&mut window, &v_creator,
+//			&pipelines[0], creator_input),
+		button: GuiButton::create(&mut window, (-1.0, -1.0)),
 		window: window,
-		event: Event::None,
-		pipelines: pipelines,
 	};
 
-	new_triangle(&mut context, &V_TRIANGLE);
+//	new_triangle(&mut context, &V_TRIANGLE);
 
-	while screen::running(&mut context.window, &mut context.event) {
-		input(&mut context);
+	loop {
+		let input = context.window.update();
+
+		match input {
+			Input::Back => break,
+			Input::Redraw => redraw(&mut context),
+			_ => {},
+		}
+
+		context.button.update(&mut context.window, input);
+
+//		input(&mut context);
 	}
-	screen::cleanup(&mut context.window);
 }

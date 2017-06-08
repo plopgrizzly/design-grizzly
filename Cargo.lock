@@ -2,20 +2,45 @@
 name = "design_grizzly"
 version = "0.1.0"
 dependencies = [
- "aldaron 0.1.0",
+ "adi 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
-name = "aldaron"
-version = "0.1.0"
+name = "adi"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "gcc 0.3.43 (registry+https://github.com/rust-lang/crates.io-index)",
+ "adi_screen 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "adi_clock"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "adi_screen"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "adi_clock 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ami 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gcc 0.3.50 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ami"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "gcc"
-version = "0.3.43"
+version = "0.3.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
-"checksum gcc 0.3.43 (registry+https://github.com/rust-lang/crates.io-index)" = "c07c758b972368e703a562686adb39125707cc1ef3399da8c019fc6c2498a75d"
+"checksum adi 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "bbbc166c3f90d2aee31c4419f0aab627be160c88275cf285ca0deeda2c3407f5"
+"checksum adi_clock 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5244b57251c997be830774da0dba3943bf3fc6d00a41a09519da3420bf0b6698"
+"checksum adi_screen 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "af2f32ef50bc4b2aef458ea3bd1f89b98d09c2ab5ed49be8c412030e01f9378e"
+"checksum ami 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "438d965299a99480c6f442d4e37a7b04a3266c496c194a8529ad0c40a332ce8c"
+"checksum gcc 0.3.50 (registry+https://github.com/rust-lang/crates.io-index)" = "5f837c392f2ea61cb1576eac188653df828c861b7137d74ea4a5caa89621f9e6"
